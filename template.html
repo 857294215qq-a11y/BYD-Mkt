@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movento BYD 华人市场</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>/*D3*/</script>
+<style>
+:root{
+  color-scheme:light;
+  --paper:#FFFFFF;
+  --mist:#F5F5F7;
+  --ink:#1D1D1F;
+  --graphite:#6E6E73;
+  --quiet:#86868B;
+  --hair:rgba(0,0,0,.08);
+  --hair-strong:rgba(0,0,0,.14);
+  --red:#E3263A;
+  --blue:#1F5BFF;
+  --violet:#7A5AF8;
+  --dot:#C4C8CF;
+  --green:#1E9E61;
+  --glass:rgba(255,255,255,.62);
+  --glass-strong:rgba(255,255,255,.78);
+  --glass-edge:rgba(255,255,255,.9);
+  --shadow-float:0 1px 1px rgba(0,0,0,.03),0 8px 24px rgba(0,0,0,.06),0 24px 60px rgba(0,0,0,.06);
+  --r-xl:36px; --r-lg:28px; --r-md:20px; --r-sm:14px;
+  --ease:cubic-bezier(.32,.72,0,1);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Hiragino Sans GB","Inter","Helvetica Neue","Microsoft YaHei",sans-serif;
+}
+@supports (corner-shape: squircle){
+  :root{--r-xl:56px;--r-lg:44px;--r-md:32px;--r-sm:22px}
+  .sq{corner-shape:squircle}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.011em}
+body [lang="es"]{display:none!important}
+html[data-lang="es"] body [lang="zh"]{display:none!important}
+html[data-lang="es"] body [lang="es"]{display:revert!important}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+@media (max-width:640px){.wrap{padding:0 16px}}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:calc(14px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 18px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-edge);box-shadow:var(--shadow-float);max-width:calc(100vw - 24px)}
+.nav .brand{font-weight:600;font-size:14px;white-space:nowrap;margin-right:8px}
+.nav .links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav .links::-webkit-scrollbar{display:none}
+.nav .links a{font-size:13px;color:var(--graphite);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap;transition:background .2s,color .2s}
+.nav .links a:hover{color:var(--ink);background:rgba(0,0,0,.04)}
+.nav .links a.on{color:var(--ink);background:rgba(0,0,0,.06)}
+.seg{display:inline-flex;position:relative;background:rgba(118,118,128,.12);border-radius:999px;padding:2px}
+.seg button{white-space:nowrap;position:relative;z-index:1;border:0;background:none;font-size:13px;font-weight:500;padding:6px 13px;border-radius:999px;cursor:pointer;color:var(--graphite);transition:color .25s}
+.seg button[aria-pressed="true"]{color:var(--ink)}
+.seg .thumb{position:absolute;top:2px;bottom:2px;border-radius:999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 3px 8px rgba(0,0,0,.06);transition:left .35s var(--ease),width .35s var(--ease)}
+@media (max-width:760px){.nav .links{display:none}.nav{padding-left:16px}}
+
+/* ---------- hero ---------- */
+.hero.wrap{padding-top:120px;padding-bottom:28px}
+.hero h1{text-wrap:balance;font-size:clamp(40px,6.4vw,84px);line-height:1.02;letter-spacing:-.045em;font-weight:700;margin:0 0 22px;max-width:14ch}
+html[data-lang="es"] .hero h1{text-wrap:balance;max-width:18ch;font-size:clamp(36px,5.6vw,74px)}
+.hero .lede{font-size:clamp(18px,1.8vw,22px);line-height:1.5;color:var(--graphite);max-width:40em;margin:0}
+.hero .lede b{color:var(--ink);font-weight:600}
+.meta-line{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 26px;font-size:14px;color:var(--quiet)}
+
+/* ---------- map ---------- */
+.mapstage{position:relative;margin:34px auto 0;max-width:1440px;padding:0 20px}
+@media (max-width:640px){.mapstage{padding:0 10px}}
+.mapcard{position:relative;height:min(78vh,820px);min-height:520px;border-radius:var(--r-xl);overflow:hidden;background:#F7F8FA;border:1px solid var(--hair);box-shadow:0 30px 80px -30px rgba(20,30,60,.18)}
+.mapcard canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.mapcard canvas.dragging{cursor:grabbing}
+.mapcard canvas.pointer{cursor:pointer}
+.glass{background:var(--glass);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--glass-edge);box-shadow:var(--shadow-float)}
+.legend{position:absolute;top:18px;left:18px;width:268px;border-radius:var(--r-lg);padding:16px 16px 12px;z-index:3}
+.legend h3{font-size:15px;margin:0 0 2px;font-weight:600;letter-spacing:-.02em}
+.legend .sub{font-size:12px;color:var(--graphite);margin:0 0 10px;line-height:1.4}
+.layer{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:8px 8px;margin:0 -8px;width:calc(100% + 16px);border-radius:14px;cursor:pointer;text-align:left;transition:background .2s}
+.layer:hover{background:rgba(0,0,0,.035)}
+.layer .sw{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.layer .t{flex:1;font-size:13px;line-height:1.25}
+.layer .t small{display:block;color:var(--quiet);font-size:11.5px}
+.tog{width:34px;height:20px;border-radius:999px;background:rgba(120,120,128,.2);position:relative;flex:none;transition:background .25s}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .3s var(--ease)}
+.layer[aria-pressed="true"] .tog{background:var(--ink)}
+.layer[aria-pressed="true"] .tog::after{transform:translateX(14px)}
+.legend .foot{border-top:1px solid var(--hair);margin-top:8px;padding-top:10px;font-size:11.5px;color:var(--quiet);line-height:1.45}
+.legend .foot button{border:0;background:none;padding:0;color:var(--blue);cursor:pointer;font-size:11.5px}
+.side{position:absolute;top:18px;right:18px;bottom:18px;width:330px;border-radius:var(--r-lg);z-index:3;display:flex;flex-direction:column;overflow:hidden}
+.side .hd{padding:18px 18px 10px}
+.side .hd h3{margin:0;font-size:15px;font-weight:600;letter-spacing:-.02em}
+.side .hd p{margin:2px 0 0;font-size:12px;color:var(--graphite)}
+.side .body{overflow-y:auto;padding:0 10px 14px;flex:1}
+.mrow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px;width:100%;border:0;background:none;text-align:left;padding:9px 8px;border-radius:14px;cursor:pointer;transition:background .2s}
+.mrow:hover,.mrow.hl{background:rgba(0,0,0,.04)}
+.mrow .n{font-size:13.5px;font-weight:500}
+.mrow .v{font-size:13px;font-weight:600}
+.mrow .bar{grid-column:1/-1;height:4px;border-radius:4px;background:rgba(0,0,0,.05);overflow:hidden;position:relative}
+.mrow .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--red)}
+.mrow .s{grid-column:1/-1;font-size:11.5px;color:var(--quiet)}
+.side .sortbar{display:flex;gap:6px;padding:0 18px 8px}
+.chip{white-space:nowrap;border:1px solid var(--hair-strong);background:rgba(255,255,255,.6);border-radius:999px;font-size:12px;padding:4px 10px;cursor:pointer;color:var(--graphite)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.detail .back{border:0;background:none;color:var(--blue);font-size:13px;cursor:pointer;padding:6px 8px}
+.detail h4{font-size:24px;letter-spacing:-.03em;margin:4px 8px 2px;font-weight:700;line-height:1.1}
+.detail .tag{margin:0 8px 12px;font-size:12.5px;color:var(--graphite)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 4px}
+.kv div{background:rgba(255,255,255,.7);border:1px solid var(--hair);border-radius:16px;padding:10px 12px}
+.kv b{display:block;font-size:20px;font-weight:600;letter-spacing:-.03em;line-height:1.15}
+.kv div>span{font-size:11.5px;color:var(--graphite);line-height:1.3;display:block}
+.detail .note{margin:12px 8px 0;font-size:13px;line-height:1.55;color:var(--ink)}
+.zoomctl{position:absolute;left:18px;bottom:18px;z-index:3;border-radius:999px;display:flex;flex-direction:column;overflow:hidden}
+.zoomctl button{width:40px;height:40px;border:0;background:none;font-size:20px;cursor:pointer;color:var(--ink)}
+.zoomctl button+button{border-top:1px solid var(--hair)}
+.hint{position:absolute;left:70px;bottom:26px;z-index:3;font-size:12px;color:var(--graphite);padding:6px 12px;border-radius:999px}
+.tip{position:absolute;z-index:4;pointer-events:none;border-radius:16px;padding:10px 12px;font-size:12.5px;line-height:1.35;min-width:150px;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.tip.on{opacity:1;transform:none}
+.tip b{font-size:13.5px}
+.scale{position:absolute;right:366px;bottom:24px;z-index:3;font-size:11px;color:var(--graphite);display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.scale i{display:block;height:5px;border:1.5px solid var(--graphite);border-top:0}
+@media (max-width:1000px){
+  .mapcard{height:auto;min-height:0;display:flex;flex-direction:column;background:var(--paper)}
+  .mapcard .canvaswrap{position:relative;height:62vh;min-height:420px;background:#F7F8FA}
+  .legend{position:relative;top:auto;left:auto;width:auto;border-radius:0;padding:16px 16px 12px;background:var(--paper);box-shadow:none;border:0;border-bottom:1px solid var(--hair);backdrop-filter:none;-webkit-backdrop-filter:none}
+  .legend .sub{margin-bottom:10px}
+  .legend .layers{display:flex;flex-wrap:wrap;gap:6px}
+  .legend .layer{width:auto;margin:0;padding:6px 11px 6px 8px;border-radius:999px;border:1px solid var(--hair-strong);gap:7px}
+  .legend .layer[aria-pressed="false"]{opacity:.45}
+  .legend .layer[aria-pressed="false"] .sw{background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--quiet)}
+  .legend .layer .t{font-size:12.5px}
+  .legend .layer .t small,.legend .tog{display:none}
+  .legend .foot{border:0;margin:6px 0 0;padding:0}
+  .side{position:relative;inset:auto;width:auto;border-radius:0;box-shadow:none;border:0;background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;max-height:none}
+  .side .body{overflow:visible}
+  .scale{right:14px}
+  .hint{display:none}
+}
+@media (min-width:1001px){.mapcard .canvaswrap{position:absolute;inset:0}}
+
+/* ---------- sections ---------- */
+section{padding:120px 0 0}
+@media (max-width:640px){section{padding-top:84px}}
+.sh{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:44px}
+.sh h2{text-wrap:balance;font-size:clamp(32px,4.2vw,54px);line-height:1.05;letter-spacing:-.04em;margin:0;font-weight:700}
+.sh p{margin:0;color:var(--graphite);font-size:18px;line-height:1.55;max-width:34em}
+@media (max-width:860px){.sh{grid-template-columns:1fr;gap:14px}}
+.kicker{font-size:15px;font-weight:600;color:var(--graphite);margin:0 0 14px;letter-spacing:-.01em}
+.tap{cursor:pointer;transition:transform .5s var(--ease),box-shadow .5s var(--ease),background .3s}
+.tap:hover{transform:translateY(-2px)}
+.tap:active{transform:scale(.985)}
+.more{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:var(--blue);margin-top:14px}
+.more svg{width:14px;height:14px;transition:transform .3s var(--ease)}
+.tap:hover .more svg{transform:translateX(3px)}
+
+/* why */
+.why{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.why .col{display:grid;gap:16px}
+.panel{background:var(--mist);border-radius:var(--r-lg);padding:28px;border:0;text-align:left;width:100%;display:block}
+.panel h3{font-size:22px;letter-spacing:-.03em;margin:0 0 6px;font-weight:600;line-height:1.2}
+.panel p{margin:0;color:var(--graphite);font-size:15.5px}
+.big{font-size:clamp(46px,5.4vw,72px);font-weight:700;letter-spacing:-.05em;line-height:1;margin:14px 0 8px}
+@media (max-width:860px){.why{grid-template-columns:1fr}}
+.incomechart{margin-top:18px}
+.ibar{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:13px;padding:4px 0}
+.ibar .track{height:10px;border-radius:10px;background:rgba(0,0,0,.05);position:relative}
+.ibar .track i{position:absolute;left:0;top:0;bottom:0;border-radius:10px;background:var(--violet)}
+.ibar.base .track i{background:#A9ABB3}
+.ibar .track .ref{position:absolute;top:-4px;bottom:-4px;width:1.5px;background:var(--ink);opacity:.5}
+.ibar b{font-weight:600;text-align:right}
+.ibar.hl .n{font-weight:600}
+.stamp{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.05);color:var(--graphite);margin-bottom:10px}
+.stamp.field{background:rgba(30,158,97,.1);color:#137a4a}
+.stamp.data{background:rgba(31,91,255,.08);color:var(--blue)}
+
+/* personas */
+.personas{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:auto auto;gap:16px}
+.pcard{background:var(--mist);border-radius:var(--r-lg);padding:26px;border:0;text-align:left;display:flex;flex-direction:column}
+.pcard.primary{grid-row:1/3;background:var(--ink);color:#fff;padding:34px}
+.pcard.primary p,.pcard.primary .meta{color:rgba(255,255,255,.7)}
+.pcard.primary .more{color:#8FB0FF}
+.pcard .who{font-size:13px;font-weight:600;color:var(--graphite);margin-bottom:10px}
+.pcard.primary .who{color:#FF8A96}
+.pcard h3{font-size:24px;letter-spacing:-.03em;margin:0 0 8px;line-height:1.15;font-weight:600}
+.pcard.primary h3{font-size:clamp(28px,3vw,40px);line-height:1.08}
+.pcard p{margin:0;color:var(--graphite);font-size:15px}
+.pcard .meta{margin-top:auto;padding-top:18px;font-size:13px;color:var(--quiet)}
+.pcard .models{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pill{font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.06)}
+.pcard.primary .pill{background:rgba(255,255,255,.12);color:#fff}
+.pcard.wide{grid-column:2/4}
+@media (max-width:900px){.personas{grid-template-columns:1fr}.pcard.primary,.pcard.wide{grid-row:auto;grid-column:auto}}
+
+/* journey */
+.journey{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.jstep{background:var(--mist);border:0;border-radius:var(--r-md);padding:18px 14px 16px;text-align:left;min-height:170px;display:flex;flex-direction:column}
+.jstep .ix{font-size:12px;color:var(--quiet);font-weight:600}
+.jstep h4{margin:10px 0 4px;font-size:17px;letter-spacing:-.02em;font-weight:600;line-height:1.2}
+.jstep p{margin:0;font-size:13px;color:var(--graphite);line-height:1.4}
+.jstep .plat{margin-top:auto;padding-top:12px;display:flex;gap:4px;flex-wrap:wrap}
+.jstep .plat span{font-size:11px;padding:3px 8px;border-radius:999px;background:#fff;color:var(--ink);font-weight:500}
+.jstep[aria-pressed="true"]{background:var(--ink);color:#fff}
+.jstep[aria-pressed="true"] p,.jstep[aria-pressed="true"] .ix{color:rgba(255,255,255,.65)}
+@media (max-width:1000px){.journey{grid-template-columns:repeat(2,minmax(0,1fr))}.jstep{min-height:0}}
+.platforms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.plcard{border-radius:var(--r-lg);padding:26px;border:1px solid var(--hair);background:#fff;text-align:left}
+.plcard .logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;margin-bottom:16px}
+.plcard h3{margin:0;font-size:21px;letter-spacing:-.03em;font-weight:600}
+.plcard .eq{font-size:13px;color:var(--graphite);margin:4px 0 12px}
+.plcard p{margin:0;font-size:14.5px;color:var(--graphite)}
+.prio{display:flex;gap:3px;margin-top:14px;align-items:center;font-size:12px;color:var(--quiet)}
+.prio i{width:18px;height:5px;border-radius:5px;background:rgba(0,0,0,.08)}
+.prio i.on{background:var(--ink)}
+@media (max-width:860px){.platforms{grid-template-columns:1fr}}
+.accounts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media (max-width:760px){.accounts{grid-template-columns:1fr}}
+.ratio{display:flex;height:10px;border-radius:10px;overflow:hidden;margin:16px 0 8px;gap:2px}
+.ratio i{display:block}
+.ratiol{display:flex;gap:14px;font-size:12.5px;color:var(--graphite);flex-wrap:wrap}
+.ratiol>span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--c)}
+
+/* models */
+.mtable{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hair)}
+.mhead,.mline{display:grid;grid-template-columns:1.3fr .8fr repeat(4,minmax(0,.7fr));align-items:center}
+.mhead{background:var(--mist);font-size:12.5px;color:var(--graphite);font-weight:500}
+.mhead div,.mline>div{padding:14px 16px}
+.mline{border:0;border-top:1px solid var(--hair);width:100%;background:#fff;text-align:left;cursor:pointer;transition:background .2s}
+.mline:hover{background:#FAFAFB}
+.mline .mn{font-weight:600;font-size:16px;letter-spacing:-.02em}
+.mline .mn small{display:block;font-weight:400;color:var(--quiet);font-size:12px}
+.mline .pr{font-size:15px;font-weight:600}
+.fit{display:flex;justify-content:center}
+.fit i{width:12px;height:12px;border-radius:50%;background:rgba(0,0,0,.08)}
+.fit i.f2{background:var(--ink)}
+.fit i.f1{background:transparent;box-shadow:inset 0 0 0 2px var(--ink)}
+.mfoot{font-size:12.5px;color:var(--quiet);margin-top:12px}
+@media (max-width:860px){
+  .mhead{display:none}
+  .mline{grid-template-columns:1fr auto;row-gap:0}
+  .mline .fit{display:none}
+  .mfoot{display:none}
+}
+
+/* roadmap */
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.phase{border-radius:var(--r-lg);padding:28px;background:var(--mist);display:flex;flex-direction:column;gap:10px}
+.phase.now{background:#fff;border:1.5px solid var(--ink)}
+.phase .when{font-size:13px;color:var(--graphite);font-weight:500}
+.phase h3{margin:0;font-size:26px;letter-spacing:-.035em;font-weight:700;line-height:1.1}
+.phase .gate{font-size:13px;color:var(--graphite);padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.04);margin-top:4px}
+.phase.now .gate{background:rgba(227,38,58,.06);color:#9c1a28}
+.act{display:flex;gap:12px;align-items:flex-start;border:0;background:#fff;border-radius:18px;padding:13px 14px;text-align:left;width:100%;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.phase.now .act{background:var(--mist)}
+.act .d{flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink);margin-top:8px}
+.act .d.idea{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.act b{display:block;font-size:15px;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+.act small{display:block;font-size:12.5px;color:var(--graphite);line-height:1.4;margin-top:2px}
+.act .wk{margin-left:auto;font-size:11.5px;color:var(--quiet);white-space:nowrap;padding-left:8px;margin-top:2px}
+@media (max-width:980px){.phases{grid-template-columns:1fr}}
+
+/* budget */
+.budget{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+@media (max-width:920px){.budget{grid-template-columns:1fr}}
+.ledger{border-radius:var(--r-lg);border:1px solid var(--hair);overflow:hidden;background:#fff}
+.ledger .grp{padding:14px 20px 6px;font-size:13px;font-weight:600;color:var(--graphite);background:var(--mist)}
+.li{display:grid;grid-template-columns:auto 1fr auto;column-gap:14px;row-gap:10px;align-items:center;padding:14px 20px;border-top:1px solid var(--hair)}
+.li.off .t,.li.off .a,.li.off .q{opacity:.45}
+.li input[type=checkbox]{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--hair-strong);margin:0;display:grid;place-items:center;cursor:pointer;transition:background .2s,border-color .2s}
+.li input[type=checkbox]:checked{background:var(--ink);border-color:var(--ink)}
+.li input[type=checkbox]:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.li .t b{display:block;font-size:15px;font-weight:600;letter-spacing:-.015em}
+.li .t small{display:block;font-size:12.5px;color:var(--graphite);line-height:1.4}
+.li .a{font-weight:600;font-size:15px;white-space:nowrap}
+.li.var .a::after{content:" *";color:var(--quiet)}
+.li .q{grid-column:2/4;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stp{display:inline-flex;align-items:center;background:var(--mist);border-radius:999px;padding:2px;height:32px}
+.stp .cur{padding:0 0 0 10px;font-size:13px;color:var(--graphite)}
+.stp input{width:62px;border:0;background:none;font:inherit;font-size:14px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums;color:var(--ink);-moz-appearance:textfield;padding:0 4px}
+.stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stp input:focus{outline:none}
+.stp:focus-within{box-shadow:0 0 0 2px var(--blue)}
+.stp button{width:28px;height:28px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.12);cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center}
+.li .x,.li .u{font-size:13px;color:var(--graphite)}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:18px 20px;border-top:1px solid var(--hair-strong)}
+.total b{font-size:34px;letter-spacing:-.04em}
+.calc{border-radius:var(--r-lg);background:var(--ink);color:#fff;padding:28px;position:sticky;top:88px}
+.calc h3{margin:0 0 4px;font-size:20px;letter-spacing:-.03em;font-weight:600}
+.calc .sub{margin:0 0 18px;font-size:13px;color:rgba(255,255,255,.6)}
+.rng{margin:0 0 16px}
+.rng label{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px;color:rgba(255,255,255,.8)}
+.rng label b{color:#fff;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:rgba(255,255,255,.18);outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:0;cursor:pointer}
+.out{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.out div{background:rgba(255,255,255,.07);border-radius:18px;padding:12px 14px}
+.out b{display:block;font-size:26px;letter-spacing:-.04em;font-weight:600}
+.out span{font-size:12px;color:rgba(255,255,255,.6)}
+.calc .fine{font-size:11.5px;color:rgba(255,255,255,.5);margin:14px 0 0;line-height:1.5}
+
+/* orgs + cases */
+.orgs{margin-top:40px;border-radius:var(--r-lg);border:1px solid var(--hair);padding:26px}
+.orgs-hd,.cases-hd{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:end;margin-bottom:18px}
+.orgs-hd h3,.cases-hd h3{margin:0;font-size:22px;letter-spacing:-.03em;font-weight:600;line-height:1.2}
+.orgs-hd p,.cases-hd p{margin:0;font-size:14.5px;color:var(--graphite)}
+@media (max-width:760px){.orgs-hd,.cases-hd{grid-template-columns:1fr;gap:8px}}
+.orglist{display:flex;flex-wrap:wrap;gap:8px}
+.org{border:0;background:var(--mist);border-radius:999px;padding:9px 16px;text-align:left;cursor:pointer}
+.org b{font-size:14px;font-weight:500}
+.org small{display:block;font-size:11.5px;color:var(--graphite)}
+.cases-hd{margin-top:56px}
+.cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.case{border:1px solid var(--hair);background:#fff;border-radius:var(--r-lg);padding:24px;text-align:left;display:flex;flex-direction:column}
+.case .where{font-size:12.5px;color:var(--graphite);font-weight:500}
+.case b{font-size:44px;font-weight:700;letter-spacing:-.05em;line-height:1;margin:14px 0 10px}
+.case h4{margin:0 0 6px;font-size:17px;letter-spacing:-.02em;font-weight:600;line-height:1.3}
+.case p{margin:0;font-size:14px;color:var(--graphite)}
+.case .more{margin-top:auto;padding-top:14px}
+@media (max-width:900px){.cases{grid-template-columns:1fr}}
+
+/* floating section menu for narrow windows */
+.fabnav{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:60;display:none;flex-direction:column;align-items:flex-end;gap:10px}
+.fab{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px 0 15px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+.fab svg{width:18px;height:18px}
+.fabmenu{display:flex;flex-direction:column;padding:8px;border-radius:var(--r-md);min-width:170px;transform-origin:100% 100%;transform:scale(.6);opacity:0;pointer-events:none;transition:transform .45s var(--ease),opacity .25s}
+.fabnav.open .fabmenu{transform:none;opacity:1;pointer-events:auto}
+.fabmenu a{text-decoration:none;font-size:15px;padding:10px 14px;border-radius:14px;color:var(--ink)}
+.fabmenu a:hover,.fabmenu a.on{background:rgba(0,0,0,.06)}
+@media (max-width:760px){.fabnav{display:flex}}
+
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{border-top:2px solid var(--ink);padding-top:14px}
+.kpi b{font-size:17px;font-weight:600;letter-spacing:-.02em;display:block}
+.kpi p{margin:4px 0 0;font-size:14px;color:var(--graphite)}
+@media (max-width:860px){.kpis{grid-template-columns:1fr 1fr}}
+
+/* sources */
+.sources{columns:2;column-gap:40px;font-size:14px;color:var(--graphite)}
+.sources p{break-inside:avoid;margin:0 0 14px}
+.sources a{color:var(--ink);text-decoration-color:rgba(0,0,0,.2);text-underline-offset:3px}
+@media (max-width:760px){.sources{columns:1}}
+footer{padding:80px 0 60px;color:var(--quiet);font-size:13px}
+
+/* ---------- sheet ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,18,25,.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .4s var(--ease);z-index:80}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;inset:0;margin:auto;width:min(760px,calc(100vw - 32px));height:fit-content;max-height:min(86vh,900px);z-index:90;border-radius:var(--r-xl);background:var(--glass-strong);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid var(--glass-edge);box-shadow:0 40px 120px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;visibility:hidden;pointer-events:none;transform-origin:0 0}
+.sheet.on{visibility:visible;pointer-events:auto}
+.sheet .content{transition:opacity .25s}
+.sheet.morph .content,.sheet.morph .top{opacity:0}
+.sheet .top{transition:opacity .25s}
+.sheet .top{display:flex;justify-content:flex-end;padding:14px 14px 0;position:absolute;top:0;right:0;z-index:2}
+.sheet .x{width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.06);cursor:pointer;display:grid;place-items:center}
+.sheet .x svg{width:14px;height:14px}
+.sheet .content{overflow-y:auto;padding:38px 44px 44px;min-height:0}
+.sheet .lab{font-size:13px;font-weight:600;color:var(--graphite);margin:0 0 6px}
+.sheet h2{font-size:34px;letter-spacing:-.04em;line-height:1.08;margin:0 0 12px;font-weight:700}
+.sheet .intro{font-size:17px;color:var(--graphite);margin:0 0 22px}
+.sheet h5{font-size:14px;margin:24px 0 8px;font-weight:600;letter-spacing:-.01em}
+.sheet p,.sheet li{font-size:15px;line-height:1.6}
+.sheet ul{padding-left:18px;margin:0}
+.sheet li{margin:0 0 6px}
+.sheet .fact{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sheet .fact div{background:rgba(255,255,255,.75);border:1px solid var(--hair);border-radius:18px;padding:12px 14px}
+.sheet .fact b{display:block;font-size:22px;letter-spacing:-.03em;font-weight:600}
+.sheet .fact div>span{font-size:12px;color:var(--graphite)}
+.sheet .quote{border-left:3px solid var(--red);padding:4px 0 4px 14px;margin:18px 0;font-size:17px;font-weight:500;letter-spacing:-.015em}
+.sheet .src{font-size:12.5px;color:var(--quiet);margin-top:26px;border-top:1px solid var(--hair);padding-top:12px}
+@media (max-width:640px){
+  .sheet{width:calc(100vw - 20px);max-height:88vh}
+  .sheet .content{padding:34px 20px 32px}
+  .sheet h2{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Sections">
+  <span class="brand">Movento × BYD</span>
+  <div class="links">
+    <a href="#map"><span lang="zh">地图</span><span lang="es">Mapa</span></a>
+    <a href="#why"><span lang="zh">购买力</span><span lang="es">Poder de compra</span></a>
+    <a href="#people"><span lang="zh">客群</span><span lang="es">Clientes</span></a>
+    <a href="#channels"><span lang="zh">渠道</span><span lang="es">Canales</span></a>
+    <a href="#models"><span lang="zh">车型</span><span lang="es">Modelos</span></a>
+    <a href="#plan"><span lang="zh">计划</span><span lang="es">Plan</span></a>
+    <a href="#budget"><span lang="zh">预算</span><span lang="es">Presupuesto</span></a>
+  </div>
+  <div class="seg" role="group" aria-label="Language">
+    <span class="thumb"></span>
+    <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+    <button type="button" data-lang="es" aria-pressed="false">ES</button>
+  </div>
+</nav>
+
+<header class="hero wrap" id="top">
+  <div class="meta-line">
+    <span lang="zh">内部提案 · 华人市场 90 天试点</span><span lang="es">Propuesta interna · Piloto de 90 días con la comunidad china</span>
+    <span>Movento BYD Badalona</span>
+    <span lang="zh">2026 年 10 月</span><span lang="es">Octubre 2026</span>
+  </div>
+  <h1><span lang="zh">离门店最近的<br>一万名潜在客户</span><span lang="es">Los 10.000 clientes potenciales más cercanos al concesionario</span></h1>
+  <p class="lede">
+    <span lang="zh">Badalona、Santa Coloma 和 Sant Adrià 住着 <b class="num">10,444</b> 名中国籍居民，离门店约 3 公里的 Badalona Sud 园区还有 <b>300 多家</b>华人企业。他们买得起，也信任 BYD，缺的只是一个讲中文、懂本地手续的入口——这正是我们门店已经具备的。建议先用 90 天、约 <b class="num">€2,700</b> 做一次试点。</span>
+    <span lang="es">Badalona, Santa Coloma y Sant Adrià suman <b class="num">10.444</b> residentes de nacionalidad china, y a unos 3 km del concesionario el polígono Badalona Sud reúne <b>más de 300</b> empresas chinas. Pueden permitírselo y confían en BYD; les falta un punto de contacto que hable chino y conozca los trámites locales, justo lo que ya tenemos. Proponemos un piloto de 90 días con unos <b class="num">2.700 €</b>.</span>
+  </p>
+</header>
+
+<div class="mapstage" id="map">
+  <div class="mapcard sq">
+    <div class="legend glass sq">
+        <h3><span lang="zh">谁住在门店周围</span><span lang="es">Quién vive alrededor del concesionario</span></h3>
+        <p class="sub"><span lang="zh">每个点落在一栋真实住宅楼上；Badalona 与 Santa Coloma 按普查区分配</span><span lang="es">Cada punto sobre un edificio residencial real; en Badalona y Santa Coloma, por distrito censal</span></p>
+        <div class="layers">
+          <button class="layer" data-layer="cn" aria-pressed="true"><span class="sw" style="background:var(--red)"></span><span class="t"><span lang="zh">华人居民</span><span lang="es">Residentes chinos</span><small><span lang="zh">1 点 = 3 人</span><span lang="es">1 punto = 3 personas</span></small></span><span class="tog"></span></button>
+          <button class="layer" data-layer="biz" aria-pressed="true"><span class="sw" style="background:var(--blue)"></span><span class="t"><span lang="zh">华人企业 · Badalona Sud</span><span lang="es">Empresas chinas · Badalona Sud</span><small><span lang="zh">1 点 = 1 家（示意位置）</span><span lang="es">1 punto = 1 empresa (ubicación indicativa)</span></small></span><span class="tog"></span></button>
+          <button class="layer" data-layer="res" aria-pressed="true"><span class="sw" style="background:var(--dot)"></span><span class="t"><span lang="zh">全部居民</span><span lang="es">Toda la población</span><small><span lang="zh">1 点 = 10 人</span><span lang="es">1 punto = 10 personas</span></small></span><span class="tog"></span></button>
+          <button class="layer" data-layer="inc" aria-pressed="false"><span class="sw" style="background:var(--violet)"></span><span class="t"><span lang="zh">人均可支配收入</span><span lang="es">Renta disponible por habitante</span><small><span lang="zh">颜色越深越高</span><span lang="es">Más intenso = más alta</span></small></span><span class="tog"></span></button>
+          <button class="layer" data-layer="field" aria-pressed="true"><span class="sw" style="background:rgba(30,158,97,.15);box-shadow:inset 0 0 0 1.5px var(--green)"></span><span class="t"><span lang="zh">门店一线观察</span><span lang="es">Observación del concesionario</span><small><span lang="zh">统计看不到的聚集点</span><span lang="es">Lo que la estadística no ve</span></small></span><span class="tog"></span></button>
+          <button class="layer" data-layer="ring" aria-pressed="true"><span class="sw" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink)"></span><span class="t"><span lang="zh">距门店 2 / 5 / 10 km</span><span lang="es">A 2 / 5 / 10 km del concesionario</span><small><span lang="zh">直线距离</span><span lang="es">Distancia en línea recta</span></small></span><span class="tog"></span></button>
+        </div>
+        <div class="foot"><span lang="zh">Idescat 2025 人口数据按住宅楼体量分配到楼栋。</span><span lang="es">Datos de Idescat 2025 repartidos por volumen residencial de cada edificio.</span> <button type="button" data-sheet="method"><span lang="zh">方法说明</span><span lang="es">Metodología</span></button></div>
+      </div>
+    <div class="canvaswrap">
+      <canvas id="cv" aria-label="Dot density map"></canvas>
+      <div class="zoomctl glass"><button type="button" data-zoom="1" aria-label="Zoom in">+</button><button type="button" data-zoom="-1" aria-label="Zoom out">−</button><button type="button" data-zoom="0" aria-label="Reset view" style="font-size:15px">⟲</button></div>
+      <div class="hint glass"><span lang="zh">拖动平移 · 双指或 ⌘ + 滚轮缩放 · 点击市镇查看数据</span><span lang="es">Arrastra para mover · pellizca o ⌘ + rueda para ampliar · haz clic en un municipio</span></div>
+      <div class="scale"><span id="scaleLabel">1 km</span><i id="scaleBar" style="width:60px"></i></div>
+      <div class="tip glass" id="tip"></div>
+    </div>
+    <aside class="side glass sq" id="side" aria-live="polite"></aside>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="why">
+  <div class="sh">
+    <h2><span lang="zh">他们有钱，也愿意买 BYD</span><span lang="es">Tienen poder de compra y confían en BYD</span></h2>
+    <p><span lang="zh">地图证明了“人在这里”。下面三组证据回答管理层真正关心的问题：这群人买不买得起，会不会选 BYD。</span><span lang="es">El mapa demuestra que la comunidad está aquí. Estas tres pruebas responden a lo que importa: si pueden permitírselo y si elegirían BYD.</span></p>
+  </div>
+  <div class="why">
+    <button class="panel tap sq" data-sheet="income">
+      <span class="stamp data"><span lang="zh">官方数据 · Idescat</span><span lang="es">Dato oficial · Idescat</span></span>
+      <h3><span lang="zh">门店往北的滨海走廊，收入明显高于加泰平均</span><span lang="es">El corredor costero al norte del concesionario supera claramente la renta media catalana</span></h3>
+      <p><span lang="zh">人均家庭可支配收入指数（加泰罗尼亚 = 100，2023）</span><span lang="es">Índice de renta familiar disponible por habitante (Cataluña = 100, 2023)</span></p>
+      <div class="incomechart" id="incomeChart"></div>
+      <span class="more"><span lang="zh">看各市镇收入与汽车保有量</span><span lang="es">Ver renta y parque de turismos por municipio</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+    </button>
+    <div class="col">
+      <button class="panel tap sq" data-sheet="brand">
+        <span class="stamp data"><span lang="zh">官方数据 · BYD</span><span lang="es">Dato oficial · BYD</span></span>
+        <h3><span lang="zh">在中国人人都知道的品牌，在西班牙正在爆发</span><span lang="es">Una marca que todo chino conoce, en plena expansión en España</span></h3>
+        <div class="big num">+373.7%</div>
+        <p><span lang="zh">BYD 西班牙 2025 年注册量增长，全年 25,552 辆；2026 年前 7 个月已超过 2025 全年。</span><span lang="es">Crecimiento de matriculaciones de BYD en España en 2025 (25.552 unidades). En los siete primeros meses de 2026 ya superó todo 2025.</span></p>
+        <span class="more"><span lang="zh">为什么华人天然更信任 BYD</span><span lang="es">Por qué la comunidad china confía de entrada en BYD</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+      </button>
+      <button class="panel tap sq" data-sheet="field">
+        <span class="stamp field"><span lang="zh">门店一线观察</span><span lang="es">Observación comercial</span></span>
+        <h3><span lang="zh">从奔驰、宝马、奥迪换到新能源，已经在发生</span><span lang="es">El salto de Mercedes, BMW y Audi al eléctrico ya está ocurriendo</span></h3>
+        <p><span lang="zh">Badalona 商圈里，不少华人客户已经开 BYD；更多原 BBA 车主换成了以特斯拉为主的电动车。购买意愿已被验证，缺的是一个会说中文、懂本地流程的入口。</span><span lang="es">En Badalona muchos clientes chinos ya conducen BYD, y muchos antiguos propietarios de BMW, Mercedes y Audi se han pasado al eléctrico, sobre todo a Tesla. La intención de compra existe; falta un punto de contacto en chino que conozca los trámites locales.</span></p>
+        <span class="more"><span lang="zh">这对我们意味着什么</span><span lang="es">Qué significa para nosotros</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="people">
+  <div class="sh">
+    <h2><span lang="zh">四类客户，先打生意老板</span><span lang="es">Cuatro perfiles de cliente, empezando por los empresarios</span></h2>
+    <p><span lang="zh">华人不是一个客户，而是几种决策方式完全不同的人。试点把 70% 的精力放在做生意的老板身上：客单价最高，也最能带来转介绍。</span><span lang="es">La comunidad china no es un único cliente: son perfiles con formas de decidir muy distintas. El piloto dedica el 70 % del esfuerzo a los empresarios, que tienen el ticket más alto y generan más recomendaciones.</span></p>
+  </div>
+  <div class="personas">
+    <button class="pcard primary tap sq" data-sheet="p-boss">
+      <div class="who"><span lang="zh">主攻 · 约 70% 精力</span><span lang="es">Prioridad · 70 % del esfuerzo</span></div>
+      <h3><span lang="zh">生意老板：批发、进出口、餐饮与零售</span><span lang="es">Empresarios: mayoristas, importación, restauración y comercio</span></h3>
+      <p><span lang="zh">Badalona Sud 的批发商、Fondo 与 Badalona 的店主、物流与服务业老板。车既是家用，也是生意的门面；习惯公司名义购车，决策快，最看重面子、空间、手续省心，以及“买完以后有人管”。</span><span lang="es">Mayoristas de Badalona Sud, comerciantes de Fondo y Badalona, empresarios de logística y servicios. El coche es familiar y a la vez imagen de empresa; suelen comprar a nombre de la sociedad, deciden rápido y valoran estatus, espacio, trámites sin complicaciones y un servicio posventa en su idioma.</span></p>
+      <div class="models"><span class="pill">SEALION 7</span><span class="pill">SEAL U DM-i</span><span class="pill">ATTO 8 · <span lang="zh">即将上市</span><span lang="es">próximamente</span></span></div>
+      <div class="meta"><span lang="zh">触达：商会 · 微信/视频号 · 老带新</span><span lang="es">Canales: asociaciones empresariales · WeChat · recomendaciones</span></div>
+      <span class="more"><span lang="zh">完整画像</span><span lang="es">Perfil completo</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+    </button>
+    <button class="pcard tap sq" data-sheet="p-family">
+      <div class="who"><span lang="zh">次要</span><span lang="es">Secundario</span></div>
+      <h3><span lang="zh">创一代家庭</span><span lang="es">Familias de primera generación</span></h3>
+      <p><span lang="zh">住在 Montgat、Masnou 等滨海片区，从 BBA 换新能源，不想“降级”。</span><span lang="es">Viven en Montgat, El Masnou y el litoral; pasan de BMW, Mercedes o Audi al eléctrico sin querer perder categoría.</span></p>
+      <div class="models"><span class="pill">SEALION 7</span><span class="pill">SEAL U</span><span class="pill">ATTO 8</span></div>
+      <span class="more"><span lang="zh">完整画像</span><span lang="es">Perfil completo</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+    </button>
+    <button class="pcard tap sq" data-sheet="p-young">
+      <div class="who"><span lang="zh">次要</span><span lang="es">Secundario</span></div>
+      <h3><span lang="zh">华人二代与年轻职场人</span><span lang="es">Segunda generación y jóvenes profesionales</span></h3>
+      <p><span lang="zh">在西班牙长大或工作，双语，自己做功课，第一台车常由父母参与出资。</span><span lang="es">Crecieron o trabajan en España, son bilingües, investigan por su cuenta y a menudo los padres participan en la compra.</span></p>
+      <div class="models"><span class="pill">ATTO 2</span><span class="pill">SEAL</span><span class="pill">DOLPHIN</span></div>
+      <span class="more"><span lang="zh">完整画像</span><span lang="es">Perfil completo</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+    </button>
+    <button class="pcard wide tap sq" data-sheet="p-network">
+      <div class="who"><span lang="zh">放大器，不是客户</span><span lang="es">Multiplicadores, no clientes</span></div>
+      <h3><span lang="zh">商会会长、Gestoría、驾校、老客户</span><span lang="es">Presidentes de asociaciones, gestorías, autoescuelas y clientes actuales</span></h3>
+      <p><span lang="zh">华人圈是熟人社会。一个被信任的节点，比一百条广告更能带来到店。试点要先和这些人建立关系。</span><span lang="es">La comunidad funciona por confianza personal. Un contacto de confianza trae más visitas que cien anuncios; el piloto empieza por ganarse a estas personas.</span></p>
+      <span class="more"><span lang="zh">怎么合作</span><span lang="es">Cómo colaborar</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span>
+    </button>
+  </div>
+  <div class="orgs">
+    <div class="orgs-hd"><h3><span lang="zh">参考名单：有影响力的社团与机构</span><span lang="es">Referencia: asociaciones e instituciones con influencia</span></h3><p><span lang="zh">第一阶段优先接触的对象，合作方式在拜访后确定。</span><span lang="es">Primeros contactos de la fase 1; la forma de colaborar se definirá tras las visitas.</span></p></div>
+    <div class="orglist"><button class="org tap" data-sheet="orgs"><b>温州总商会</b><small lang="es">Cámara de Comercio de Wenzhou</small></button><button class="org tap" data-sheet="orgs"><b>西班牙侨商总会</b><small lang="es">Asociación de Empresarios Chinos de Ultramar</small></button><button class="org tap" data-sheet="orgs"><b>西班牙华侨华人社团联谊总会</b><small lang="es">Federación de Asociaciones Chinas</small></button><button class="org tap" data-sheet="orgs"><b>西班牙妇女联谊总会</b><small lang="es">Asociación de Mujeres Chinas</small></button><button class="org tap" data-sheet="orgs"><b>浙江总商会</b><small lang="es">Cámara de Comercio de Zhejiang</small></button><button class="org tap" data-sheet="orgs"><b>欧洲福建联盟闽商总会</b><small lang="es">Asociación Europea de Empresarios de Fujian</small></button><button class="org tap" data-sheet="orgs"><b>西班牙华人山东总会</b><small lang="es">Asociación de Shandong</small></button><button class="org tap" data-sheet="orgs"><b>西班牙深圳总商会</b><small lang="es">Cámara de Comercio de Shenzhen</small></button><button class="org tap" data-sheet="orgs"><b>一峰律师事务所</b><small lang="es">Despacho Yifeng</small></button></div>
+  </div>
+</section>
+
+<section id="channels">
+  <div class="sh">
+    <h2><span lang="zh">三个中国平台，各管一段路</span><span lang="es">Tres plataformas chinas, cada una con su papel</span></h2>
+    <p><span lang="zh">不是把西语广告翻译成中文，而是让每个平台承担客户旅程中的一步。点击每一步看具体做法。</span><span lang="es">No se trata de traducir anuncios, sino de que cada plataforma cubra una etapa del recorrido del cliente. Haz clic en cada etapa para ver cómo.</span></p>
+  </div>
+  <div class="journey" id="journey"></div>
+  <div class="platforms">
+    <button class="plcard tap sq" data-sheet="xhs">
+      <div class="logo" style="background:#FF2442">小红书</div>
+      <h3>Xiaohongshu</h3>
+      <div class="eq"><span lang="zh">研究与信任</span><span lang="es">≈ Instagram + Pinterest + reseñas de Google</span></div>
+      <p><span lang="zh">有购车意向的人在这里搜“巴塞罗那买 BYD”。攻略类内容寿命长，是试点的第一优先级。</span><span lang="es">Quien piensa comprar busca aquí “comprar BYD en Barcelona”. Las guías prácticas se siguen encontrando meses después: primera prioridad del piloto.</span></p>
+      <div class="prio"><i class="on"></i><i class="on"></i><i class="on"></i><span style="margin-left:6px"><span lang="zh">优先级 高</span><span lang="es">Prioridad alta</span></span></div>
+    </button>
+    <button class="plcard tap sq" data-sheet="douyin">
+      <div class="logo" style="background:#111">抖音</div>
+      <h3>Douyin</h3>
+      <div class="eq"><span lang="zh">曝光与人物感</span><span lang="es">≈ TikTok para el público chino</span></div>
+      <p><span lang="zh">让更多人知道“Badalona 有家 BYD，里面有人讲中文”。短视频、工作日记、交车现场。</span><span lang="es">Para que se sepa que en Badalona hay un BYD donde se habla chino: vídeos cortos, día a día y entregas.</span></p>
+      <div class="prio"><i class="on"></i><i class="on"></i><i></i><span style="margin-left:6px"><span lang="zh">优先级 中</span><span lang="es">Prioridad media</span></span></div>
+    </button>
+    <button class="plcard tap sq" data-sheet="wechat">
+      <div class="logo" style="background:#07C160">微信</div>
+      <h3>WeChat · <span lang="zh">视频号</span><span lang="es">Channels</span></h3>
+      <div class="eq"><span lang="zh">沟通、成交与转介绍</span><span lang="es">≈ WhatsApp + Stories + grupos</span></div>
+      <p><span lang="zh">所有咨询最终落到微信里。视频号内容能直接转进商会群和朋友圈，是老带新的主战场。</span><span lang="es">Todas las consultas acaban en WeChat. Los vídeos se reenvían a grupos de empresarios y al muro personal: el terreno de las recomendaciones.</span></p>
+      <div class="prio"><i class="on"></i><i class="on"></i><i class="on"></i><span style="margin-left:6px"><span lang="zh">优先级 高（转化）</span><span lang="es">Prioridad alta (conversión)</span></span></div>
+    </button>
+  </div>
+  <div class="accounts">
+    <button class="panel tap sq" data-sheet="acc-personal">
+      <h3><span lang="zh">个人号：“这里真的有人懂我”</span><span lang="es">Cuenta personal: “aquí alguien me entiende”</span></h3>
+      <p><span lang="zh">中国员工本人出镜，讲流程、答问题、带看 Taller。</span><span lang="es">El empleado chino da la cara: explica trámites, responde dudas y enseña el taller.</span></p>
+      <div class="ratio"><i style="flex:70;background:var(--ink)"></i><i style="flex:20;background:#A9ABB3"></i><i style="flex:10;background:var(--red)"></i></div>
+      <div class="ratiol"><span style="--c:var(--ink)"><span lang="zh">70% 实用信息</span><span lang="es">70 % información útil</span></span><span style="--c:#A9ABB3"><span lang="zh">20% 幕后日常</span><span lang="es">20 % día a día</span></span><span style="--c:var(--red)"><span lang="zh">10% 促销</span><span lang="es">10 % promoción</span></span></div>
+    </button>
+    <button class="panel tap sq" data-sheet="acc-official">
+      <h3><span lang="zh">官方号：“Movento 真的重视华人客户”</span><span lang="es">Cuenta oficial: “Movento se toma en serio a la comunidad china”</span></h3>
+      <p><span lang="zh">证明这不是员工个人行为，而是公司支持的中文服务入口。按中国节日重新策划，而不是翻译。</span><span lang="es">Demuestra que no es una iniciativa personal sino un servicio en chino respaldado por la empresa, con contenidos pensados para las fiestas chinas, no traducidos.</span></p>
+      <div class="ratiol" style="margin-top:16px"><span style="--c:var(--ink)"><span lang="zh">品牌</span><span lang="es">Marca</span></span><span style="--c:var(--blue)"><span lang="zh">车型与活动</span><span lang="es">Modelos y eventos</span></span><span style="--c:var(--green)">Taller</span><span style="--c:var(--red)"><span lang="zh">节日与社区</span><span lang="es">Fiestas y comunidad</span></span></div>
+    </button>
+  </div>
+  <div class="cases-hd"><h3><span lang="zh">这种账号矩阵，已经有人做成了</span><span lang="es">Este modelo de cuentas ya funciona en otros sitios</span></h3><p><span lang="zh">在小红书搜任何汽车品牌，除了官方号，还会出现大量门店号和销售个人号——“官方号 + 个人号”已是国内行业常态，海外华人市场也有豪华品牌在做。</span><span lang="es">Al buscar cualquier marca de coches en Xiaohongshu aparecen, además de la oficial, muchas cuentas de concesionarios y de comerciales: “cuenta oficial + cuentas personales” es lo habitual en China, y marcas premium ya lo aplican con la comunidad china en el extranjero.</span></p></div>
+  <div class="cases"><button class="case tap sq" data-sheet="case-nio"><span class="where"><span lang="zh">中国 · 小红书</span><span lang="es">China · Xiaohongshu</span></span><b class="num">1,000</b><h4><span lang="zh">蔚来：官方号 + 门店号 + 员工号</span><span lang="es">NIO: cuenta oficial + tiendas + empleados</span></h4><p><span lang="zh">160+ 位销售在小红书卖出约 1,000 台车，线索成本从千元级降到百元以内。</span><span lang="es">Más de 160 comerciales vendieron unos 1.000 coches desde Xiaohongshu; el coste por contacto bajó de miles a menos de cien yuanes.</span></p><span class="more"><span lang="zh">对我们的启发</span><span lang="es">Qué aprendemos</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span></button><button class="case tap sq" data-sheet="case-lsh"><span class="where"><span lang="zh">澳大利亚 · 微信 + 小红书</span><span lang="es">Australia · WeChat + Xiaohongshu</span></span><b class="num">6</b><h4><span lang="zh">利星行：奔驰经销商做华人社媒</span><span lang="es">LSH Auto: concesionario Mercedes-Benz para la comunidad china</span></h4><p><span lang="zh">集团号 + 3 家奔驰门店 + 3 家 smart 展厅，双语内容日历、每周更新。</span><span lang="es">Cuenta del grupo, 3 concesionarios Mercedes-Benz y 3 tiendas smart, con calendario bilingüe y publicaciones semanales.</span></p><span class="more"><span lang="zh">对我们的启发</span><span lang="es">Qué aprendemos</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span></button><button class="case tap sq" data-sheet="case-wuling"><span class="where"><span lang="zh">中国 · 抖音</span><span lang="es">China · Douyin</span></span><b class="num">1000+</b><h4><span lang="zh">五菱：上千个经销商账号统一作战</span><span lang="es">Wuling: más de mil cuentas de concesionarios</span></h4><p><span lang="zh">品牌给统一脚本和节奏，门店账号本地执行，18 天抖音传播破亿。</span><span lang="es">La marca da guion y calendario, cada concesionario ejecuta en local: más de 100 millones de impactos en 18 días.</span></p><span class="more"><span lang="zh">对我们的启发</span><span lang="es">Qué aprendemos</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></span></button></div>
+</section>
+
+<section id="models">
+  <div class="sh">
+    <h2><span lang="zh">每类客户，对应一台车</span><span lang="es">Un modelo para cada perfil</span></h2>
+    <p><span lang="zh">价格为 BYD 西班牙官网公布的起售价（2026 年 9 月查询），仅作定位参考，以门店报价为准。点击车型看推荐话术。</span><span lang="es">Precios desde, según la web de BYD España (consulta de septiembre de 2026). Solo como referencia; prevalece la oferta del concesionario. Haz clic en cada modelo para ver el argumento de venta.</span></p>
+  </div>
+  <div class="mtable sq" id="modelTable"></div>
+  <div class="mfoot"><span lang="zh">● 首推　○ 可选</span><span lang="es">● Recomendado　○ Alternativa</span></div>
+</section>
+
+<section id="plan">
+  <div class="sh">
+    <h2><span lang="zh">先小步验证，见效再加码</span><span lang="es">Validar primero, invertir más después</span></h2>
+    <p><span lang="zh">第一阶段只用低预算和现有人力。商会优惠、Gestoría 说明会这类更花精力和预算的动作，放在初步见效之后。</span><span lang="es">La primera fase usa poco presupuesto y el equipo actual. Las acciones que exigen más tiempo y dinero, como las ventajas para asociaciones o las sesiones con gestorías, llegan cuando haya primeros resultados.</span></p>
+  </div>
+  <div class="phases" id="phases"></div>
+</section>
+
+<section id="budget">
+  <div class="sh">
+    <h2><span lang="zh">预算不高，但每一欧都有去处</span><span lang="es">Un presupuesto modesto, con cada euro asignado</span></h2>
+    <p><span lang="zh">勾选调整项目，右侧用漏斗假设估算回报。所有转化率都是待校准的假设，请和销售经理一起确定。</span><span lang="es">Marca o desmarca partidas y estima el retorno con las hipótesis del embudo a la derecha. Todas las tasas son supuestos que hay que ajustar con el jefe de ventas.</span></p>
+  </div>
+  <div class="budget">
+    <div class="ledger sq" id="ledger"></div>
+    <div class="calc sq" id="calc">
+      <h3><span lang="zh">90 天回报估算</span><span lang="es">Retorno estimado a 90 días</span></h3>
+      <p class="sub"><span lang="zh">拖动滑块调整假设 · 预算取左侧合计 </span><span lang="es">Ajusta los supuestos · presupuesto de la izquierda: </span><b id="o-budget" style="color:#fff"></b></p>
+      <div class="rng"><label for="r-leads"><span><span lang="zh">新增中文咨询（微信）</span><span lang="es">Nuevas consultas en chino (WeChat)</span></span><b id="v-leads"></b></label><input type="range" id="r-leads" min="40" max="400" step="10" value="150"></div>
+      <div class="rng"><label for="r-td"><span><span lang="zh">咨询 → 试驾</span><span lang="es">Consulta → prueba</span></span><b id="v-td"></b></label><input type="range" id="r-td" min="5" max="40" step="1" value="18"></div>
+      <div class="rng"><label for="r-close"><span><span lang="zh">试驾 → 成交</span><span lang="es">Prueba → venta</span></span><b id="v-close"></b></label><input type="range" id="r-close" min="10" max="50" step="1" value="25"></div>
+      <div class="rng"><label for="r-price"><span><span lang="zh">平均成交价</span><span lang="es">Precio medio de venta</span></span><b id="v-price"></b></label><input type="range" id="r-price" min="18000" max="45000" step="500" value="32000"></div>
+      <div class="out">
+        <div><b class="num" id="o-td"></b><span><span lang="zh">试驾</span><span lang="es">Pruebas</span></span></div>
+        <div><b class="num" id="o-sales"></b><span><span lang="zh">成交台数</span><span lang="es">Ventas</span></span></div>
+        <div><b class="num" id="o-rev"></b><span><span lang="zh">成交额</span><span lang="es">Facturación</span></span></div>
+        <div><b class="num" id="o-cps"></b><span><span lang="zh">每台营销成本</span><span lang="es">Coste de marketing por venta</span></span></div>
+      </div>
+      <p class="fine"><span lang="zh">估算不含厂家/门店让利。成交额不等于利润。默认值为提案假设，不是承诺。</span><span lang="es">No incluye descuentos de marca ni del concesionario. Facturación no equivale a margen. Los valores iniciales son hipótesis, no compromisos.</span></p>
+    </div>
+  </div>
+  <h3 class="kicker" style="margin-top:56px"><span lang="zh">怎么衡量成败</span><span lang="es">Cómo mediremos el resultado</span></h3>
+  <div class="kpis">
+    <div class="kpi"><b><span lang="zh">来源可追踪</span><span lang="es">Origen trazable</span></b><p><span lang="zh">CRM 新增来源“华人社区”，每个平台、每场活动用独立二维码。</span><span lang="es">Nuevo origen “Comunidad china” en el CRM y un código QR distinto por plataforma y evento.</span></p></div>
+    <div class="kpi"><b><span lang="zh">每周一个数</span><span lang="es">Un dato cada semana</span></b><p><span lang="zh">新增微信咨询、预约到店、试驾、报价、成交，周一同步给 Marketing。</span><span lang="es">Consultas nuevas, citas, pruebas, ofertas y ventas, compartidas con Marketing cada lunes.</span></p></div>
+    <div class="kpi"><b><span lang="zh">第 45 天复盘</span><span lang="es">Revisión en el día 45</span></b><p><span lang="zh">看哪个平台带来真实到店，砍掉无效内容，集中资源。</span><span lang="es">Ver qué plataforma trae visitas reales, eliminar lo que no funciona y concentrar recursos.</span></p></div>
+    <div class="kpi"><b><span lang="zh">第 90 天决策</span><span lang="es">Decisión en el día 90</span></b><p><span lang="zh">达到门槛即进入第二阶段；未达到则调整或停止，损失可控。</span><span lang="es">Si se alcanza el umbral, pasamos a la fase 2; si no, se ajusta o se detiene con un coste limitado.</span></p></div>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="sh">
+    <h2><span lang="zh">数据来源</span><span lang="es">Fuentes</span></h2>
+    <p><span lang="zh">公开数据与需要用 CRM 验证的商业观察分开标注。</span><span lang="es">Los datos públicos y las observaciones comerciales pendientes de validar con el CRM se indican por separado.</span></p>
+  </div>
+  <div class="sources" id="sourceList"></div>
+</section>
+
+</main>
+<footer class="wrap"><span lang="zh">Movento BYD Badalona · 华人市场内部提案 · 地图底图 © OpenStreetMap 贡献者（ODbL）</span><span lang="es">Movento BYD Badalona · Propuesta interna comunidad china · Cartografía © colaboradores de OpenStreetMap (ODbL)</span></footer>
+
+<div class="fabnav" id="fabnav">
+  <div class="fabmenu glass sq" id="fabmenu" role="menu">
+    <a href="#top" role="menuitem"><span lang="zh">开头</span><span lang="es">Inicio</span></a>
+    <a href="#map" role="menuitem"><span lang="zh">地图</span><span lang="es">Mapa</span></a>
+    <a href="#why" role="menuitem"><span lang="zh">购买力</span><span lang="es">Poder de compra</span></a>
+    <a href="#people" role="menuitem"><span lang="zh">客群</span><span lang="es">Clientes</span></a>
+    <a href="#channels" role="menuitem"><span lang="zh">渠道</span><span lang="es">Canales</span></a>
+    <a href="#models" role="menuitem"><span lang="zh">车型</span><span lang="es">Modelos</span></a>
+    <a href="#plan" role="menuitem"><span lang="zh">计划</span><span lang="es">Plan</span></a>
+    <a href="#budget" role="menuitem"><span lang="zh">预算</span><span lang="es">Presupuesto</span></a>
+    <a href="#sources" role="menuitem"><span lang="zh">来源</span><span lang="es">Fuentes</span></a>
+  </div>
+  <button class="fab glass" id="fab" type="button" aria-expanded="false" aria-controls="fabmenu"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg><span id="fabLabel"><span lang="zh">目录</span><span lang="es">Índice</span></span></button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet sq" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="top"><button class="x" type="button" id="sheetClose" aria-label="Close"><svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="2"><path d="M2 2l10 10M12 2L2 12"/></svg></button></div>
+  <div class="content" id="sheetBody"></div>
+</div>
+
+<script>/*MAPDATA*/</script>
+<script>/*APP*/</script>
+</body>
+</html>
